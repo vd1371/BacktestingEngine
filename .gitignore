@@ -161,6 +161,7 @@ cython_debug/
 
 # Data files
 *.csv
+!Database/Symbols.csv
 *.xlsx
 *.xls
 *.json
@@ -192,3 +193,5 @@ cython_debug/
 *.pdf
 
 *.prof
+
+*.vscode
