@@ -318,7 +318,8 @@ def run_alpha_strategy_for_one_symbol(macro_and_other_data, params):
                 close_trade_at(trade, t_monitoring, close_price, "Stop loss at daily close", **params)
 
             elif event_type == "take_profit_at_close":
-                close_trade_for_take_profit(
+                stop_loss_threshold, take_profit_threshold = \
+                    close_trade_for_take_profit(
                         trade,
                         t_monitoring,
                         stop_loss_threshold,
