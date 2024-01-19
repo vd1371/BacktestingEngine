@@ -48,6 +48,9 @@ def get_statistical_summary_of_trades(trades_df, df_g = None, **params):
 
 def add_statistical_reports(df, summary, df_g = None, is_chunk = False, **params):
 
+    # df consists of the trades that are done in the specified period
+    # df_g consists of the portfolio value in the specified period
+
     years = params.get("years_to_consider")
     summary['win'] = df['is_successful'].mean()
     summary['long_win'] = df[df["trade_direction"] == LONG]['is_successful'].mean()
@@ -70,7 +73,8 @@ def add_statistical_reports(df, summary, df_g = None, is_chunk = False, **params
 
 
     ## TODO: ASSIGNMENT #1
-    ## TODO: ASSIGNMENT #2
+    
+
     return summary
 
 
