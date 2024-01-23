@@ -18,7 +18,7 @@ def add_statistical_measures(
         It is usually passed for the daily data, so that we can use the daily data of the other indices
     '''
 
-    ## TODO: ASSIGNMENT #3: Add Beta and IV here
+    ## TODO: ASSIGNMENT #2: Add Beta and IV here
 
     # This flag will be used to check if we need to save the data to cache
     is_updated = False

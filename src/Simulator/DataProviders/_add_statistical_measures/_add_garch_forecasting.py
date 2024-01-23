@@ -6,7 +6,7 @@ def _add_garch_forecasting(df, interval, **params):
     Add GARCH forecasting results to the dataframe.
     """
 
-    ##TODO: ASSIGNMENT #5 - Add GARCH forecasting here
+    ##TODO: ASSIGNMENT #4 - Add GARCH forecasting here
 
     sholud_add_garch = params['should_add_garch']
 
