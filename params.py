@@ -33,6 +33,8 @@ def get_params(
         should_add_arima_forecasting = False,
 
         should_load_from_cache = True,
+
+        draw_stat_figures = True,
     ):
 
     '''
@@ -104,6 +106,7 @@ def get_params(
         "slippage_rate": slippage_rate,
 
         "strategy_name": strategy_name,
+        "strategy_type": "market_neutral",
 
         "risk_level_percentage": risk_level_percentage,
         "should_stop_loss": should_stop_loss,
@@ -125,4 +128,6 @@ def get_params(
 
         "take_profit_strategy": "Simple",
         "should_log": True,
+
+        "draw_stat_figures": draw_stat_figures,
     }
