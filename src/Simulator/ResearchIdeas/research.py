@@ -38,4 +38,4 @@ def research(**params):
     if should_log and draw_stat_figures:
         WinningRatePlotter(df, **params).plot()
 
-    df_cleaned, exog_cols = conduct_univariate_multivariate_hyp_testing(df, **params)
+    conduct_univariate_multivariate_hyp_testing(df, **params)
