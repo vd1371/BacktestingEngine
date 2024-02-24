@@ -28,6 +28,9 @@ class WinningRatePlotter:
     def _draw_winning_rate_for_weekdays(self):
 
         col = "stat_weekday"
+        if col not in self.df.columns:
+            return
+
         grouped = self.df.groupby([col, 'trade_direction'])['is_successful'].mean().unstack()
 
         # create a figure with two axes
@@ -71,6 +74,8 @@ class WinningRatePlotter:
     def _draw_winning_rate_for_opening_hours(self):
         
         col = "stat_opening_hour"
+        if col not in self.df.columns:
+            return
         grouped = self.df.groupby([col, 'trade_direction'])['is_successful'].agg(['mean', 'count']).unstack()
 
         # create a figure with two axes
