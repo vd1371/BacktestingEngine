@@ -1,4 +1,5 @@
 from ._add_random_signal import add_random_signal
+from ._add_rsi_strategy import add_rsi_strategy
 
 def get_alpha_signal_func(**params):
 
@@ -6,6 +7,7 @@ def get_alpha_signal_func(**params):
 
     strategy_signal_func_dict = {
         "random": add_random_signal,
+        'rsi': add_rsi_strategy
     }
 
     signal_func = strategy_signal_func_dict.get(strategy_name)
