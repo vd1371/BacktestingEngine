@@ -1,12 +1,10 @@
 import numpy as np
 
-def add_random_signal(df_in, **params):
+def add_buy_and_hold_signal(df_in, **params):
 
     '''
-    This function adds a random signal to the dataframe.
-    The signal is a random choice of 0, 1, or -1 with probabilities 0.4, 0.3,
-    and 0.3 respectively. The trade opening price is the open price of the
-    stock multiplied by 1 plus the signal multiplied by the slippage rate.
+    This function adds a buy and hold signal to the dataframe.
+    The signal is 1 for long.
 
     Two new columns should be added to the dataframe:
     - signal: which gives the signal for the trade. 1 for long, -1 for short, 0 for no trade
@@ -29,9 +27,10 @@ def add_random_signal(df_in, **params):
     '''
 
     df = df_in.copy()
-    slippage_rate = params['slippage_rate']
 
-    df['signal'] = np.random.choice([0, 1, -1], len(df), p=[0.4, 0.3, 0.3])
-    df['trade_opening_price'] = df['Open'] * (1+ df['signal'] * slippage_rate)
+    # The first day, we buy
+    df['signal'] = 0
+    df['signal'].iloc[0] = 1
+    df['trade_opening_price'] = df['Open']
 
     return df

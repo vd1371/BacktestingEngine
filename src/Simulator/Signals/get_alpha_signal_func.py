@@ -1,5 +1,6 @@
 from ._add_random_signal import add_random_signal
-from ._add_rsi_strategy import add_rsi_strategy
+from ._add_MA5_crosses_MA50_signal import add_MA5_crosses_MA50_signal
+from ._add_buy_and_hold_signal import add_buy_and_hold_signal
 
 def get_alpha_signal_func(**params):
 
@@ -7,7 +8,8 @@ def get_alpha_signal_func(**params):
 
     strategy_signal_func_dict = {
         "random": add_random_signal,
-        'rsi': add_rsi_strategy
+        "MA5_cross_MA50": add_MA5_crosses_MA50_signal,
+        'buy_and_hold': add_buy_and_hold_signal
     }
 
     signal_func = strategy_signal_func_dict.get(strategy_name)
