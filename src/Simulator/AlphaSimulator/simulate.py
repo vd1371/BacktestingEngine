@@ -5,6 +5,7 @@ from src.Simulator.AlphaSimulator.TradeHistoryAnalyzer import TradeHistoryAnalyz
 from src.Simulator.AlphaSimulator.SimulatorUtils import TradeHistoryHolder
 
 from src.Simulator.AlphaSimulator import run_alpha_strategies
+from src.Simulator.Signals import get_universe_signal_func
 
 def simulate(**params):
     '''
@@ -33,6 +34,11 @@ def simulate(**params):
     trade_history_holder = TradeHistoryHolder(**params)
 
     trade_history_holder.load()
+
+    # Add signals based on universe
+    if get_universe_signal_func(**params) is not None and not trade_history_holder.is_loaded:
+        alpha_signal_func = get_universe_signal_func(**params)
+        alpha_signal_func(stock_histories, **params)
 
     run_alpha_strategies(stock_histories, trade_history_holder, **params)
 

@@ -5,6 +5,7 @@ import time
 from ._add_statistical_measures import add_statistical_measures
 from ._add_technical_indicators import add_technical_indicators
 from src.Simulator.Signals import get_alpha_signal_func
+from src.Simulator.Signals import get_universe_signal_func
 
 
 def combine_data_add_signal(
@@ -50,8 +51,9 @@ def combine_data_add_signal(
             continue
         df[col] = df[col].ffill()
 
-    alpha_signal_func = get_alpha_signal_func(**params)
-    df = alpha_signal_func(df, **params)
+    if get_universe_signal_func(**params) is None:
+        alpha_signal_func = get_alpha_signal_func(**params)
+        df = alpha_signal_func(df, **params)
 
     # The following lines are used in the run_alpha_strategy
     df['Close_t_1'] = df['Close'].shift()
