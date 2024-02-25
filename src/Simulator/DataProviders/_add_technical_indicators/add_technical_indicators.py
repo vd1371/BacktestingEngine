@@ -3,6 +3,29 @@ import pandas_ta as ta
 
 def add_technical_indicators(df, interval = None, **params):
 
+    '''
+    ## GUIDE: Step 4
+
+    This function adds technical indicators to the data.
+    Don't forget to shift the data before using it if you are using
+    the high, low, or close prices and assume that the trade is opened at open.
+
+    IMPORTANT NOTE: Add "stat_" prefix to the new columns that you add to the data.
+    This is important because we use this prefix to get the statistical measures
+    from the data in the simulator, signal generator, alpha strategiy, and research.
+
+    Args:
+        df: pd.DataFrame
+            The data
+
+        interval: str
+            The interval of the data
+
+    Returns:
+        df: pd.DataFrame
+    
+    '''
+
     ## TODO: ASSIGNMENT #3: Add some technical indicators here
 
     technical_indicators = {

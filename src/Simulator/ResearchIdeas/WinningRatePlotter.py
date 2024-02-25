@@ -6,6 +6,14 @@ from config import LONG, SHORT
 
 class WinningRatePlotter:
 
+    '''
+    ## GUIDE: Step 11
+
+    This class is responsible for plotting the winning rate of the trades.
+
+    The plots are saved in the STAT_FIGURES_DIR directory.
+    '''
+
     def __init__(self, report_dfs, **params) -> None:
 
         plt.rcdefaults()

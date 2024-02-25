@@ -19,6 +19,7 @@ def get_params(
 
         # Intraday trading params
         should_close_at_end_of_candle = False,
+        should_close_at_signal = False,
         
         # run_alpha_params
         should_limit_one_position_in_run_alpha = True,
@@ -116,6 +117,7 @@ def get_params(
         "take_profit_percentage": take_profit_percentage,
 
         "should_close_at_end_of_candle": should_close_at_end_of_candle,
+        "should_close_at_signal": should_close_at_signal,
         
         "should_load_from_cache": should_load_from_cache,
         "should_limit_one_position_in_run_alpha": should_limit_one_position_in_run_alpha,

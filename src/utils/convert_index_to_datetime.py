@@ -4,6 +4,31 @@ import pandas as pd
 
 def convert_index_to_datetime(df, market, trading_interval = None):
 
+    '''
+    Convert the index to datetime
+    the code converts the index to datetime based on the market and the trading interval
+    This code works for the US, HK, and Japan markets
+
+    If the market is US, the code converts the index to the US/Eastern timezone
+    If the market is HK, the code converts the index to the Asia/Hong_Kong timezone
+    If the market is Japan, the code converts the index to the Asia/Tokyo timezone
+    If the market is London, the code converts the index to the Europe/London timezone
+
+    If you want to add more markets, you can add them to the code based on the timezone of the market
+    Add the new code following the same pattern as the existing code
+
+    Args:
+    df: pd.DataFrame
+        The data
+    market: str
+        The market of the stock
+    trading_interval: str
+        The trading interval of the stock
+
+    Returns:
+        df.index: pd.DatetimeIndex
+    '''
+
     df.index = pd.to_datetime(df.index, utc=True)
     before_correction = df.index.copy()
     if market.startswith("US"):

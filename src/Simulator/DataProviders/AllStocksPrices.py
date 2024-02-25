@@ -14,7 +14,22 @@ simulation_logger = logging.getLogger("simulation_logger")
 
 class AllStocksPrices:
 
+    '''
+    ## GUIDE: Step 2
+    
+    This class is responsible for loading the stock prices and the market index.
+    It also adds statistical and technical indicators to the stock prices.
+    '''
+
     def __init__(self, **params):
+        '''
+        Initialize the AllStocksPrices class
+
+        Args:
+        params: dict
+            The parameters for the AllStocksPrices class
+        '''
+
         for k, v in params.items():
             setattr(self, k, v)
 
@@ -23,6 +38,7 @@ class AllStocksPrices:
         self.data = {}
         self.market_index = None
 
+        # Cache directory for the stock prices
         self.cache_dir = _clear_and_warm_up_cache(self.market)
 
 
@@ -35,10 +51,19 @@ class AllStocksPrices:
         params_to_pass.update(trading_interval = "1d")
 
         if market.startswith("US"):
+            # Load the market index
             self.market_index = load_data_from_yahoo_finance("^GSPC", market_macro_index = True, **params_to_pass)
+            
+            # Load the VIX index
             self.vix = load_data_from_yahoo_finance("^VIX", market_macro_index = True, **params_to_pass)
+            
+            # Load the gold futures
             self.gold_futures = load_data_from_yahoo_finance("GC=F", market_macro_index = True, **params_to_pass)
+            
+            # Load the 20 years treasuries
             self.treasuries_20years = load_data_from_yahoo_finance("TLT", market_macro_index = True, **params_to_pass)
+            
+            # Load the russel 2000
             self.russel_2000 = load_data_from_yahoo_finance("^RUT", market_macro_index = True, **params_to_pass)
 
             macro_and_other_data = {
@@ -54,7 +79,8 @@ class AllStocksPrices:
             macro_and_other_data = {
                 'market_index': self.market_index
             }
-
+        
+        # Get all the symbols for the market
         symbols = get_all_symbols(**self.__dict__)
         
         # -------------------------------------------------------------------- #

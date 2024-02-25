@@ -18,46 +18,82 @@ def simulate_investment(
         **params
         ):
     
+    ## GUIDE Step 8
+
+    '''
+    This function simulates the investment based on the given parameters.
+
+    If you want to simulate the investment, you can use this function. It
+    takes the history of trades and the stock histories and returns the
+    reports and the summary.
+
+    This allows you to simulate the investment based on the given parameters.
+
+    Args:
+        history_of_trades: list
+            stock_histories: StockHistories
+
+        **params: dict
+            The parameters for the simulation
+
+    Returns:
+        df: pd.DataFrame
+    '''
+    
     if len(history_of_trades) == 0:
         raise ValueError(
             f"There seems to be something wrong with the {params['market']} market signals") 
 
+    # Create a holder to keep the results of the simulation
     holder = SimulationResultsHolder(stock_histories, **params)
 
+    # Get all the important dates
     dates = _get_all_important_dates(stock_histories)
     # dates_for_iteration = tqdm(dates) if params["should_log"] else dates
     dates_for_iteration = dates
 
+    # Create a hash table of trades by time, to make it faster to access the trades by time
     trades_by_time = create_trades_by_time_hash_table(history_of_trades)
 
     next_valid_time = dates[0]
     for i, current_time in enumerate(dates_for_iteration):
+
+        # If the current time is before the next valid time, we should skip this candle
         potential_trades = trades_by_time.get(current_time.replace(second=0, microsecond=0), None)
         
         candle_transactions = []
         for attempt in range(1):
+            # This attempt to open position multiple times in the same candle
+            # is for some special cases. Out of the context of this project.
             if potential_trades is None:
                 break
 
             indices_of_executed_trades = []
             for i, trade in enumerate(potential_trades):
+
+                # Check if the trade should be skipped, please see the function for more details
                 if should_skip_this_trade(trade, stock_histories, holder, current_time, next_valid_time, **params):
                     continue
                 
+                # Open a new position, please see the function for more details
                 trade, transaction_desc = \
                     open_a_new_position(
                         trade, i, indices_of_executed_trades, holder, **params)
 
+                # If the trade is not executed, we should skip it
                 if transaction_desc is not None:
                     candle_transactions.append(transaction_desc)
 
             if len(indices_of_executed_trades) == 0:
                 break
-
+            
+            # Update the potential trades by removing the executed trades
             potential_trades = [potential_trades[i] for i in range(len(potential_trades)) if i not in indices_of_executed_trades]
 
         for i, trade in enumerate(holder.active_trades_queue):
             
+            # If the trade is already closed, we should skip it, else
+            # we should simulate the closure of the position
             if are_equal(current_time, trade.closing_time, **params) and \
                 not trade.is_analyzed:
 
@@ -100,6 +136,16 @@ def create_trades_by_time_hash_table(history_of_trades):
     This function creates a hash table of trades by time. The key is the
     opening time of the trade and the value is a list of trades that are
     opened at that time.
+
+    The purpose of this function is to make it faster to access the trades
+    by time.
+
+    Args:
+        history_of_trades: list
+            The history of trades
+
+    Returns:
+        trades_by_time: dict
     '''
     trades_by_time = {}
     for trade in history_of_trades:
@@ -121,6 +167,34 @@ def should_skip_this_trade(
     '''
     This function checks if a trade should be skipped or not. It returns True
     if the trade should be skipped and False otherwise.
+
+    The purpose of this function is to check if a trade should be skipped or not.
+    There can be many reasons to skip a trade. For example, if the current time
+    is before the next valid time, we should skip the trade. If the free balance
+    is not enough to open a new position, we should skip the trade. If there is
+    already an open position on the symbol of the trade, we should skip the trade.
+
+    Args:
+        trade: Trade
+            The trade to check
+
+        stock_histories: StockHistories
+            The stock histories
+
+        holder: SimulationResultsHolder
+            The holder of the results of the simulation
+
+        current_time: datetime
+            The current time
+
+        next_valid_time: datetime
+            The next valid time
+
+        **params: dict
+            The parameters for the simulation
+
+    Returns:
+        bool
     '''
 
     if current_time < next_valid_time:
@@ -131,6 +205,33 @@ def should_skip_this_trade(
 
 
 def open_a_new_position(trade, index_of_trade, indices_of_executed_trades, holder, **params):
+
+    '''
+    This function opens a new position based on a given trade.
+
+    The purpose of this function is to open a new position based on a given trade.
+    It calculates the number of shares and the invested budget for the trade and
+    then opens the trade if the invested budget is less than the free balance.
+
+    Args:
+        trade: Trade
+            The trade to open
+
+        index_of_trade: int
+            The index of the trade in the list of trades
+
+        indices_of_executed_trades: list
+            The indices of the executed trades
+
+        holder: SimulationResultsHolder
+            The holder of the results of the simulation
+
+        **params: dict
+            The parameters for the simulation
+
+    Returns:
+        trade: Trade
+    '''
 
     opening_price = trade.opening_price
 
@@ -197,6 +298,21 @@ def _mark_trade_analyzed_set_taxes_fess_return_gain(
     trade,
     **params):
 
+    '''
+    The purpose of this function is to mark a trade as analyzed, set the taxes
+    and fees, and return the gain of the trade.
+
+    Args:
+        trade: Trade
+            The trade to analyze
+
+        **params: dict
+            The parameters for the simulation
+
+    Returns:
+        gain: float
+    '''
+
     closing_price = trade.closing_price
     n_shares = trade.n_shares
     partial_invested_budget = trade.invested_budget
@@ -259,8 +375,20 @@ def _get_unrealized_value_of_trades(
 
 def _get_all_important_dates(stock_histories):
 
-    # This is a special case for 5m interval. I am assuming the date_ranges as
-    # the index of one of the symbols
+    '''
+    This function gets all the important dates from the stock histories.
+
+    The purpose of this function is to get all the important dates from the
+    stock histories.
+
+    Args:
+        stock_histories: StockHistories
+            The stock histories
+
+    Returns:
+        date_ranges: list
+    '''
+
     tmp_holder = []
     for symbol, df in stock_histories.data.items():
         tmp_holder.extend(df.index.tolist())
@@ -527,6 +655,30 @@ def close_all_active_trades(current_time, holder, stock_histories, message, cand
 
 
 def _analyze_trade_in_simulation(trade, holder, candle_transactions, **params):
+    
+    '''
+    This function analyzes a trade in the simulation.
+
+    The purpose of this function is to analyze a trade in the simulation.
+    It calculates the gain of the trade and then handles the closure of
+    the trade.
+
+    Args:
+        trade: Trade
+            The trade to analyze
+
+        holder: SimulationResultsHolder
+            The holder of the results of the simulation
+
+        candle_transactions: list
+            The transactions in the candle
+
+        **params: dict
+            The parameters for the simulation
+
+    Returns:
+        None
+    '''
 
     gain = _mark_trade_analyzed_set_taxes_fess_return_gain(trade, **params)
     holder.handle_closure_of_a_part_of_a_trade(trade.invested_budget, gain)

@@ -10,6 +10,27 @@ from src.utils import convert_time_columns_to_datetime
 
 def get_statistical_summary_of_trades(trades_df, df_g = None, **params):
 
+    '''
+    ## GUIDE: Step 10
+
+    Get the statistical summary of the trades
+
+    This function gets the statistical summary of the trades.
+
+    Args:
+        trades_df: pd.DataFrame
+            The trades history
+
+        df_g: pd.DataFrame
+            The daily budget dataframes
+
+        params: dict
+            The parameters for the simulation
+
+    Returns:
+        summaries_df: pd.DataFrame
+    '''
+
     market = params['market']
     trades_df = convert_time_columns_to_datetime(trades_df, market)
 
@@ -48,8 +69,30 @@ def get_statistical_summary_of_trades(trades_df, df_g = None, **params):
 
 def add_statistical_reports(df, summary, df_g = None, is_chunk = False, **params):
 
-    # df consists of the trades that are done in the specified period
-    # df_g consists of the portfolio value in the specified period
+
+    '''
+    This function adds the statistical reports to the summary
+
+    Args:
+        df: pd.DataFrame
+            The trades history
+
+        summary: dict
+            The summary of the trades
+
+        df_g: pd.DataFrame
+            The daily budget dataframes
+
+        is_chunk: bool
+            Whether the df is a chunk
+
+        params: dict
+            The parameters for the simulation
+
+    Returns:
+        summary: dict
+
+    '''
 
     years = params.get("years_to_consider")
     summary['win'] = df['is_successful'].mean()

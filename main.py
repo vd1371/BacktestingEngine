@@ -8,6 +8,15 @@ from src.utils import submit_loggers
 
 def run(run_mode="simulate"):
 
+    '''
+    Run the simulation, research or analyze raw data
+
+    Args:
+    run_mode: str
+        The mode to run the simulation, research or analyze raw data
+    
+    '''
+
     if len(sys.argv) > 1:
         run_mode = sys.argv[1]
 
@@ -29,9 +38,11 @@ if __name__ == "__main__":
     profile = cProfile.Profile()
     profile.enable()
 
+    ## GUIDE: Step 1
+
     # run(run_mode="analyze_raw_data")
     run(run_mode="simulate")
-    # run(run_mode="research")
+    run(run_mode="research")
 
     profile.disable()
     profile.dump_stats(os.path.join("reports", "profile.prof"))

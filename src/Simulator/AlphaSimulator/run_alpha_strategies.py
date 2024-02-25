@@ -26,22 +26,45 @@ def run_alpha_strategies(
     **params
     ):
 
+    ## GUIDE: Step 5
+
+    '''
+    This function runs the alpha strategies for the given stock prices and the trade history.
+    
+    This is the main function that runs the alpha strategies for the given stock prices and the signals.
+
+    Args:
+        stock_histories: AllStocksPrices
+            The stock prices
+        trade_history_holder: TradeHistoryHolder
+            The trade history holder
+        params: dict
+            The parameters for the simulation
+
+    returns:
+        None
+    '''
+
+    # If the trade history is loaded, we don't need to run the alpha strategies
     if trade_history_holder.is_loaded:
         return
     
     should_log = True
     run_parallel = params["run_parallel"]
 
+    # Log the parameters
     if should_log:
         simulation_logger.info(str(pprint.pformat(params)))
     
+    # The data for the market and the stocks will be stored in a list for the
+    # parallel processing. No need to change this part
     all_market_stocks_dfs = list(market_and_df_interator(
         stock_histories, **params
         ))
     
 
     # -----------------------------------------------
-    # The linear way
+    # The linear way: If we don't want to run the alpha strategies in parallel
     # -----------------------------------------------
     if not run_parallel:
         _run_alpha_strategy_process(
@@ -54,8 +77,15 @@ def run_alpha_strategies(
         )
         return
 
+    # -----------------------------------------------
+    # The parallel way: If we want to run the alpha strategies in parallel
+    # -----------------------------------------------
     n_cores = min(int(mp.cpu_count() * 0.80), len(stock_histories.data))
-    
+
+
+    # The parallel way
+    # You don't need to change this part, this is the standard way of running
+    # a code in parallel
     with Manager() as manager:
         # results_queue = Queue()
         market_stock_df_queues = manager.dict()
@@ -119,6 +149,27 @@ def _run_alpha_strategy_process(
         processes_alive,
     ):
 
+    '''
+    This function runs the alpha strategy for the given stock prices and the signals.
+    It is used for the parallel processing or the linear processing.
+    So, you don't need to change this function as well.
+
+    Args:
+        all_market_stocks_dfs_chunk: list or Queue
+            The stock prices and the signals
+        process_number: int
+            The process number
+        params: dict
+            The parameters for the simulation
+        trade_history_holder: TradeHistoryHolder
+            The trade history holder
+        results_queue: Queue
+            The queue for the results
+        processes_alive: dict
+            The processes alive
+    
+    '''
+
     market = params['market']
     should_log = params["should_log"]
 
@@ -167,6 +218,24 @@ def _run_alpha_strategy_process(
 
 def run_alpha_strategy_for_one_symbol(macro_and_other_data, params):
 
+    ## GUIDE: Step 6
+
+    '''
+    This function runs the alpha strategy for the given stock prices and the signals.
+    The signal will be added to the data in the combine_data_add_signal function.
+
+    I will explain each step of the function in the comments.
+
+    Args:
+        macro_and_other_data: dict
+            The stock prices and the signals
+        params: dict
+            The parameters for the simulation
+
+    Returns:
+        list of Trades
+    '''
+
     symbol = macro_and_other_data['symbol']
 
     market = params['market']
@@ -174,6 +243,8 @@ def run_alpha_strategy_for_one_symbol(macro_and_other_data, params):
 
     should_limit_one_position_in_run_alpha = params['should_limit_one_position_in_run_alpha']
 
+    # Adding the signal to the data, please refer to the combine_data_add_signal
+    # function for more details
     df = combine_data_add_signal(macro_and_other_data, **params)
 
     any_trade_open = False
@@ -181,23 +252,47 @@ def run_alpha_strategy_for_one_symbol(macro_and_other_data, params):
 
     holder = deque()
 
+    '''
+    I am using the dict_of_signals and dict_of_prices to iterate over the data
+    and get the signals and the prices. The reason is that the complexity of
+    reading the data is O(1) for the dict
+    '''
     dict_of_signals = df[df['signal'] != 0][
         ['Open', 'High', 'Low', 'Close', 'signal',
             'trade_opening_price', 'Close_t_1',
         ]
     ].to_dict(orient='index')
 
+    '''
+    The dict_of_prices is used to get the prices of the candles
+    I am using the dict_of_prices to iterate over the data and get the signals
+    and the prices. The reason is that the complexity of reading the data is
+    O(1) for the dict
+    '''
     dict_of_prices = df[
         ['Open', 'High', 'Low', 'Close', 'Close_t_1']
         ].to_dict(orient='index')
     
+    '''
+    This is the df that will be used for monitoring the trades. I am using 
+    a subset of the df to monitor the trades. The reason is that reading and
+    filtering smaller dfs is faster than reading and filtering the whole df
+    '''
     df_for_monitoring = df[[
         'Open', 'High', 'Low', 'Close',
         'Close_t_1', 'end_of_candle',
         'close_long_signal', 'close_short_signal']].copy()
 
+    # The iteration over the signals
     for t in dict_of_signals:
-
+        
+        '''
+        If we want to limit one position in the run_alpha, we need to check
+        if the latest trade is still open. If it's open, we need to skip the
+        current signal. Also, we need to check if the current signal is before
+        the latest trade closing time. If it's before, we need to skip the
+        current signal if we want to limit one position in the run_alpha.
+        '''
         if should_limit_one_position_in_run_alpha and \
             latest_trade_closing_time is not None and \
             t <= latest_trade_closing_time:
@@ -228,6 +323,7 @@ def run_alpha_strategy_for_one_symbol(macro_and_other_data, params):
                     trade_direction= signal,
                 )
 
+            # Setting the stop loss and take profit thresholds
             stop_loss_threshold, take_profit_threshold = \
                 set_stop_loss_and_take_profit_thresholds(
                     trade_opening_price,
@@ -249,6 +345,7 @@ def run_alpha_strategy_for_one_symbol(macro_and_other_data, params):
         
         # IMPORTANT: We need to filter the df_for_monitoring based on the t
         # If we close at the end of day, we need to filter the df_for_monitoring for only 1 day
+        # I am filtering the df_for_monitoring for faster computations
         if should_close_at_end_of_candle:
             # Get the integer index of t
             t_index = df.index.get_loc(t)
@@ -262,6 +359,8 @@ def run_alpha_strategy_for_one_symbol(macro_and_other_data, params):
             if (trade.is_closed or (trade is None or not any_trade_open)):
                 break
 
+            # Getting the next event, please refer to the _get_next_event
+            # function for more details
             event_type, t_monitoring, _ = _get_next_event(
                 df_monitoring, t_monitoring,
                 trade,
@@ -276,7 +375,7 @@ def run_alpha_strategy_for_one_symbol(macro_and_other_data, params):
             open_price = dict_of_prices[t_monitoring]['Open']
             close_price = dict_of_prices[t_monitoring]['Close']
             previous_close_price = dict_of_prices[t_monitoring]['Close_t_1']
-                
+            
             if event_type == "stop_loss_at_open":
                 close_trade_for_stop_loss(
                     trade, t_monitoring, open_price,
@@ -284,16 +383,15 @@ def run_alpha_strategy_for_one_symbol(macro_and_other_data, params):
                     **params)
 
             elif event_type == "take_profit_at_open":
-                stop_loss_threshold, take_profit_threshold = \
-                    close_trade_for_take_profit(
-                        trade,
-                        t_monitoring,
-                        stop_loss_threshold,
-                        open_price,
-                        reason = "Take Profit at Open",
-                        tocutched_price = open_price,
-                        **params
-                    )
+                close_trade_for_take_profit(
+                    trade,
+                    t_monitoring,
+                    stop_loss_threshold,
+                    open_price,
+                    reason = "Take Profit at Open",
+                    tocutched_price = open_price,
+                    **params
+                )
 
             elif event_type == "stop_loss_in_candle": 
                 close_trade_for_stop_loss(
@@ -303,31 +401,28 @@ def run_alpha_strategy_for_one_symbol(macro_and_other_data, params):
             
 
             elif event_type == "take_profit_in_candle":
-                
-                stop_loss_threshold, take_profit_threshold = \
-                    close_trade_for_take_profit(
-                        trade,
-                        t_monitoring,
-                        stop_loss_threshold,
-                        take_profit_threshold,
-                        reason = "Take Profit in candle",
-                        **params
-                    )
+                close_trade_for_take_profit(
+                    trade,
+                    t_monitoring,
+                    stop_loss_threshold,
+                    take_profit_threshold,
+                    reason = "Take Profit in candle",
+                    **params
+                )
 
             elif event_type == "stop_loss_at_close":
                 close_trade_at(trade, t_monitoring, close_price, "Stop loss at daily close", **params)
 
             elif event_type == "take_profit_at_close":
-                stop_loss_threshold, take_profit_threshold = \
-                    close_trade_for_take_profit(
-                        trade,
-                        t_monitoring,
-                        stop_loss_threshold,
-                        take_profit_threshold,
-                        reason = "Take Profit at Close",
-                        touched_price = close_price,
-                        **params
-                    )
+                close_trade_for_take_profit(
+                    trade,
+                    t_monitoring,
+                    stop_loss_threshold,
+                    take_profit_threshold,
+                    reason = "Take Profit at Close",
+                    touched_price = close_price,
+                    **params
+                )
 
             elif event_type == "hitting_close_signal":
                 close_trade_at(trade, t_monitoring, close_price, "Hitting Close Signal", **params)
@@ -351,6 +446,7 @@ def run_alpha_strategy_for_one_symbol(macro_and_other_data, params):
                 break
 
         try:
+            # If the trade is closed, we need to append it to the holder
             if any_trade_open and trade.is_closed:
                 
                 holder.append(trade)
@@ -379,8 +475,41 @@ def _get_next_event(
     stop_loss_threshold, take_profit_threshold,
     **params):
 
+    '''
+    ## GUIDE: Step 7
+
+    This function is used to get the next event for the trade
+    It is used to get the next event for the trade. The events are:
+    - stop_loss_at_open
+    - take_profit_at_open
+    - stop_loss_at_close
+    - take_profit_at_close
+    - hitting_close_signal
+    - max_holding_days_touched
+
+    If you want to add more events, you can add them here.
+
+    Args:
+        df_in: pd.DataFrame
+            The data
+        t_monitoring: pd.Timestamp
+            The time to start monitoring the trade
+        trade: Trade
+            The trade
+        stop_loss_threshold: float
+            The stop loss threshold
+        take_profit_threshold: float
+            The take profit threshold
+        params: dict
+            The parameters for the simulation
+
+    Returns:
+        tuple (event_type, t_monitoring, priority)
+    '''
+
     should_stop_loss = params['should_stop_loss']
     should_take_profit = params['should_take_profit']
+    should_close_at_signal = params['should_close_at_signal']
     should_close_at_end_of_candle = params['should_close_at_end_of_candle']
     max_holding_days = 180
 
@@ -437,6 +566,19 @@ def _get_next_event(
 
         if len(filtered_df_for_tp_in_candle) > 0:
             events.append(('take_profit_at_close', filtered_df_for_tp_in_candle.index[0], priorities_of_events['take_profit_at_close']))
+
+    # Close signal
+    if should_close_at_signal and trade.trade_direction == LONG:
+        filtered_df_for_close_signal = df[df['close_long_signal'] == 1]
+
+        if len(filtered_df_for_close_signal) > 0:
+            events.append(('hitting_close_signal', filtered_df_for_close_signal.index[0], priorities_of_events['hitting_close_signal']))
+
+    elif should_close_at_signal and trade.trade_direction == LONG:
+        filtered_df_for_close_signal = df[df['close_short_signal'] == 1]
+
+        if len(filtered_df_for_close_signal) > 0:
+            events.append(('hitting_close_signal', filtered_df_for_close_signal.index[0], priorities_of_events['hitting_close_signal']))
 
     # Max holding event
     filtered_df_for_max_holding = df[(df.index - trade.opening_time).days >= max_holding_days]

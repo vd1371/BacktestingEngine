@@ -14,6 +14,21 @@ logger = logging.getLogger("research_logger")
 
 def research(**params):
 
+    '''
+    This function performs a research on the potential trades and logs the results.
+    It works by loading the potential trades, getting the statistical summary of
+    the potential trades and conducting univariate and multivariate
+    hypothesis testing.
+
+    Args:
+    params: dict
+        The parameters for the simulation
+
+    Returns:
+        None
+    
+    '''
+
     enums = params['enums']
     should_log = params['should_log']
 

@@ -8,6 +8,34 @@ def close_trade_for_take_profit(
     **params
     ):
 
+    '''
+    Close the trade for take profit
+
+    This function is used to close the trade for take profit.
+
+    Args:
+        trade: Trade
+            The trade to close for take profit
+
+        t: datetime
+            The time to close the trade
+
+        stop_loss_threshold: float
+            The stop loss threshold
+
+        take_profit_threshold: float
+            The take profit threshold
+
+        reason: str
+            The reason for closing the trade
+
+        **params: dict
+            The parameters for the simulation
+
+    Returns:
+        stop_loss_threshold: float
+    '''
+
     slippage_rate = params['slippage_rate'] 
 
     if reason is None:

@@ -15,6 +15,26 @@ def load_data_from_yahoo_finance(
     market_macro_index = False,
     **params):
 
+    '''
+    Load the data from Yahoo Finance
+    If the data is not in the cache, it loads the data from Yahoo Finance and saves it to the cache.
+    If the data is in the cache, it loads the data from the cache.
+
+    Args:
+    symbol: str
+        The symbol of the stock
+
+    market_macro_index: bool
+        If the data is for the market macro index
+    
+    params: dict
+        The parameters for the data
+
+    Returns:
+        df: pd.DataFrame
+    
+    '''
+
     market = params['market']
     trading_interval = params.get("trading_interval")
     years = params.get("years_to_consider")
@@ -40,6 +60,27 @@ def load_data_from_yahoo_finance(
 
 
 def _get_data_from_yahoo_finance(symbol, market, trading_interval, years, last_date_for_strategy):
+
+    '''
+    Get the data from Yahoo Finance
+    it loads the data from Yahoo Finance
+    
+    Args:
+    symbol: str
+        The symbol of the stock
+
+    market: str
+        The market of the stock
+    
+    trading_interval: str
+        The trading interval of the stock
+
+    years: int
+        The number of years to consider
+
+    last_date_for_strategy: datetime.datetime
+        The last date for the strategy
+    '''
 
     stock_ticker = yf.Ticker(symbol)
     df = stock_ticker.history(

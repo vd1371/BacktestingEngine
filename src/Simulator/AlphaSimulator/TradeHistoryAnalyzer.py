@@ -8,7 +8,8 @@ class TradeHistoryAnalyzer:
         self.stock_histories = stock_histories
 
     def simulate_investment(self, **params):
-
+        
+        # Simulate the investment
         report_dfs, daily_budget_dfs = \
             simulate_investment(
                 self.trade_history_holder.history,
@@ -16,6 +17,7 @@ class TradeHistoryAnalyzer:
                 **params
         )
 
+        # Generate the report for the trades history
         summary_df = \
             generate_report_for_trades_history(
                 report_dfs,

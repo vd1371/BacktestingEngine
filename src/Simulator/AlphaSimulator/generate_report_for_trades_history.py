@@ -19,6 +19,31 @@ def generate_report_for_trades_history(
         daily_budget_dfs,
         stock_histories,
         **params):
+    
+    '''
+    ## GUIDE: Step 9
+
+    Generate the report for the trades history
+
+    This function generates the report for the trades history.
+    
+
+    Args:
+        trades_df: pd.DataFrame
+            The trades history
+
+        daily_budget_dfs: pd.DataFrame
+            The daily budget dataframes
+
+        stock_histories: AllStocksPrices
+            The stock histories
+
+        params: dict
+            The parameters for the simulation
+
+    Returns:
+        summaries_df: pd.DataFrame
+    '''
 
     
     enums = params['enums']

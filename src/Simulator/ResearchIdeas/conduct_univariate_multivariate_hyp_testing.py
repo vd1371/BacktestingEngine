@@ -23,10 +23,19 @@ TEST_SIZE = 0.4
 def conduct_univariate_multivariate_hyp_testing(df, **params):
 
     '''
+    ## GUIDE: Step 12
+
     This is an example of how we can use the univariate
     Hypothesis testing to improve a strategy.
     But the below code is written in the class and can be
     significantly better. This is just a starting point for students.
+
+    Args:
+        df: pd.DataFrame
+            The dataframe of the potential trades
+
+    Returns:
+        None
     '''
 
     # df = df.copy()

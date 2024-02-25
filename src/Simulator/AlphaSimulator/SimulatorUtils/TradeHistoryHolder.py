@@ -10,6 +10,19 @@ from src.utils import convert_time_columns_to_datetime
 
 class TradeHistoryHolder:
 
+    '''
+    The class to hold the trade history
+
+    This class holds the trade history and provides methods to add, sort, convert to dict,
+    convert to df, save, and load the trade history.
+
+    If should_cache is True, it saves the trade history to the cache directory.
+    If should_load_from_cache is True, it loads the trade history from the cache directory.
+    The user will be asked if they want to continue if should_load_from_cache is True.
+
+    You don't need to modify this class most of the times.
+    '''
+
     def __init__(self, should_cache = True, **params):
 
         self.market = params["market"]
