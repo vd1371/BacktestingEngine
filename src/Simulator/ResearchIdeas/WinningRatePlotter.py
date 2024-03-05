@@ -39,7 +39,7 @@ class WinningRatePlotter:
         if col not in self.df.columns:
             return
 
-        grouped = self.df.groupby([col, 'trade_direction'])['is_successful'].mean().unstack()
+        grouped = self.df.groupby([col, 'trade_direction'], observed=False)['is_successful'].mean().unstack()
 
         # create a figure with two axes
         fig, ax = plt.subplots()
@@ -84,7 +84,7 @@ class WinningRatePlotter:
         col = "stat_opening_hour"
         if col not in self.df.columns:
             return
-        grouped = self.df.groupby([col, 'trade_direction'])['is_successful'].agg(['mean', 'count']).unstack()
+        grouped = self.df.groupby([col, 'trade_direction'], observed=False)['is_successful'].agg(['mean', 'count']).unstack()
 
         # create a figure with two axes
         fig, (ax1, ax2) = plt.subplots(nrows=2, figsize=(16, 12))
@@ -249,7 +249,7 @@ def _draw_bar_chart(self, col):
     #                             is_successful                                #
     # ------------------------------------------------------------------------ #
     # group by weekday, trade_direction, and ratio_group, and calculate the mean of is_successful
-    grouped = self.df.groupby(['trade_direction', 'ratio_group'])['is_successful'].mean().unstack()
+    grouped = self.df.groupby(['trade_direction', 'ratio_group'], observed=False)['is_successful'].mean().unstack()
 
     positive_colors = list(plt.cm.Blues(np.linspace(0.2, 0.8, int(len(grouped.columns)/2))))
     negative_colors = list(plt.cm.Reds(np.linspace(0.2, 0.8, int(len(grouped.columns)/2))))
@@ -289,8 +289,8 @@ def _draw_bar_chart(self, col):
     # ------------------------------------------------------------------------ #
     #                the count of occurrences on the twin axis                 #
     # ------------------------------------------------------------------------ #
-    total_counts = self.df.groupby(['trade_direction'])['ratio_group'].count()
-    count_grouped = self.df.groupby(['trade_direction', 'ratio_group'])['ratio_group'].count().unstack()
+    total_counts = self.df.groupby(['trade_direction'], observed=False)['ratio_group'].count()
+    count_grouped = self.df.groupby(['trade_direction', 'ratio_group'], observed=False)['ratio_group'].count().unstack()
 
     trade_directions = [LONG]
     if self.strategy_type == "market_neutral" and SHORT in count_grouped.index:
@@ -316,7 +316,7 @@ def _draw_bar_chart(self, col):
     # ------------------------------------------------------------------------ #
     #                             the PnL_ratio mean                           #
     # ------------------------------------------------------------------------ #
-    grouped = self.df.groupby(['trade_direction', 'ratio_group'])['PnL_ratio'].mean().unstack()
+    grouped = self.df.groupby(['trade_direction', 'ratio_group'], observed=False)['PnL_ratio'].mean().unstack()
 
     positive_colors = list(plt.cm.Blues(np.linspace(0.2, 0.8, int(len(grouped.columns)/2))))
     negative_colors = list(plt.cm.Reds(np.linspace(0.2, 0.8, int(len(grouped.columns)/2))))
@@ -347,7 +347,7 @@ def _draw_bar_chart(self, col):
     # ------------------------------------------------------------------------ #
     #                            the sum of PnL_ratio                          #
     # ------------------------------------------------------------------------ #
-    grouped = self.df.groupby(['trade_direction', 'ratio_group'])['PnL_ratio'].sum().unstack()
+    grouped = self.df.groupby(['trade_direction', 'ratio_group'], observed=False)['PnL_ratio'].sum().unstack()
 
     positive_colors = list(plt.cm.Blues(np.linspace(0.2, 0.8, int(len(grouped.columns)/2))))
     negative_colors = list(plt.cm.Reds(np.linspace(0.2, 0.8, int(len(grouped.columns)/2))))
