@@ -19,10 +19,10 @@ def add_bet_against_beta_signal(stock_histories, **params):
     '''
 
     first = True
-    for symbol in stock_histories.data_1d:
+    for symbol in stock_histories.data:
 
         try:
-            beta_series = stock_histories.data_1d[symbol]['stat_beta_66_1d']
+            beta_series = stock_histories.data[symbol]['stat_beta_66_1d']
         except KeyError:
             continue
         beta_series.name = symbol
@@ -49,8 +49,8 @@ def add_bet_against_beta_signal(stock_histories, **params):
 
 
     # Add DONOTHING signal to all stocks
-    for symbol in stock_histories.data_1d:
-        stock_histories.data_1d[symbol]['signal'] = DONOTHING
+    for symbol in stock_histories.data:
+        stock_histories.data[symbol]['signal'] = DONOTHING
 
     for date in first_dates:
 
@@ -65,15 +65,15 @@ def add_bet_against_beta_signal(stock_histories, **params):
         i = 0
         added_symbols = 0
         while i < 3*N and added_symbols < N:
-            # stock_histories.data_1d[symbol].loc[date, 'signal'] = SHORT
+            # stock_histories.data[symbol].loc[date, 'signal'] = SHORT
             symbol = top_n_beta[i]
             i += 1
 
             # if True:
-            if (abs((stock_histories.data_1d[symbol].loc[date, 'stat_beta_66_1d']) < 10)
+            if (abs((stock_histories.data[symbol].loc[date, 'stat_beta_66_1d']) < 10)
                 ):
 
-                stock_histories.data_1d[symbol].loc[date, 'signal'] = SHORT
+                stock_histories.data[symbol].loc[date, 'signal'] = SHORT
                 added_symbols += 1
 
 
@@ -88,13 +88,13 @@ def add_bet_against_beta_signal(stock_histories, **params):
             i += 1
 
             if True:
-                stock_histories.data_1d[symbol].loc[date, 'signal'] = LONG
+                stock_histories.data[symbol].loc[date, 'signal'] = LONG
                 added_symbols += 1
 
 
-    for symbol in stock_histories.data_1d:
+    for symbol in stock_histories.data:
 
-        df = stock_histories.data_1d[symbol]
+        df = stock_histories.data[symbol]
 
         df['trade_opening_price'] = df['Open']
         
@@ -121,4 +121,4 @@ def add_bet_against_beta_signal(stock_histories, **params):
         df.loc[last_dates, 'close_long_signal'] = 1
         df.loc[last_dates, 'close_short_signal'] = 1
 
-        stock_histories.data_1d[symbol] = df.copy()
+        stock_histories.data[symbol] = df.copy()
