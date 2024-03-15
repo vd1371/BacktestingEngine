@@ -43,7 +43,9 @@ class AllStocksPrices:
 
 
     def load(self):
-        print ("Warming up the AllStocksPrices with historical prices ...")
+
+        if self.should_log:
+            print ("Warming up the AllStocksPrices with historical prices ...")
 
         market = self.market
         # Load the market index
@@ -97,7 +99,8 @@ class AllStocksPrices:
             params_to_pass = deepcopy(self.__dict__)
             params_to_pass.update(trading_interval = "1d")
 
-            print ("Adding statistical and technical indicators to daily data ...")
+            if self.should_log:
+                print ("Adding statistical and technical indicators to daily data ...")
 
             for symbol, df_1d in self.data.items():
 

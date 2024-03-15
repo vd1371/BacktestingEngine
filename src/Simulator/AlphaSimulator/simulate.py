@@ -27,7 +27,8 @@ def simulate(**params):
         The summary of the simulation
     '''
 
-    print (f"Starting the simulation at {datetime.datetime.now()}")
+    if params.get("should_log"):
+        print (f"Starting the simulation at {datetime.datetime.now()}")
 
     stock_histories = AllStocksPrices(**params)
     stock_histories.load()

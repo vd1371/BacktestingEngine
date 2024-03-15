@@ -36,6 +36,8 @@ def get_params(
         should_load_from_cache = True,
 
         draw_stat_figures = True,
+
+        should_log = True,
     ):
 
     '''
@@ -129,7 +131,7 @@ def get_params(
         "should_add_arima_forecasting": should_add_arima_forecasting,
 
         "take_profit_strategy": "Simple",
-        "should_log": True,
+        "should_log": should_log,
 
         "draw_stat_figures": draw_stat_figures,
     }

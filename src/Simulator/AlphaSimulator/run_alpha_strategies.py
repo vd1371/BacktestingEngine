@@ -49,7 +49,7 @@ def run_alpha_strategies(
     if trade_history_holder.is_loaded:
         return
     
-    should_log = True
+    should_log = params.get("should_log", False)
     run_parallel = params["run_parallel"]
 
     # Log the parameters
