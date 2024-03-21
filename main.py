@@ -43,9 +43,9 @@ if __name__ == "__main__":
     ## GUIDE: Step 1
 
     # run(run_mode="analyze_raw_data")
-    # run(run_mode="simulate")
+    run(run_mode="simulate")
     # run(run_mode="research")
-    run(run_mode="optimize")
+    # run(run_mode="optimize")
 
     profile.disable()
     profile.dump_stats(os.path.join("reports", "profile.prof"))
