@@ -1,6 +1,9 @@
 import os
 import pandas as pd
 import logging
+import scipy.stats as stats
+
+import matplotlib.pyplot as plt
 
 from config import LONG, SHORT
 
@@ -94,6 +97,9 @@ def generate_report_for_trades_history(
         draw_trades_executions(stock_histories, **params)
         plot_duration_of_net_exposure(df_g, **params)
 
+        plot_histogram_of_daily_return(df_g, **params)
+        plot_daily_returns_QQ_plot(df_g, **params)
+
         ## TODO: ASSIGNMENT #1
 
     return summaries_df
@@ -124,3 +130,32 @@ def _generate_report_for_symbols(df, TRADE_REPORTS_DIR, **params):
     df_to_save.to_csv(os.path.join(TRADE_REPORTS_DIR, "SummaryOfExecutedTradesIn.csv"))
 
     return
+
+
+def plot_histogram_of_daily_return(df_g, **params):
+
+    enums = params['enums']
+
+    returns = df_g['PortfolioValue'].pct_change() * 100
+
+    plt.hist(returns, bins=50)
+    plt.title('Histogram of Daily Returns')
+    plt.xlabel('Return (%)')
+    plt.ylabel('Frequency')
+
+    plt.savefig(os.path.join(enums.STAT_FIGURES_DIR, "HistogramOfDailyReturns.png"))
+
+
+def plot_daily_returns_QQ_plot(df_g, **params):
+
+    enums = params['enums']
+
+    returns = df_g['PortfolioValue'].pct_change() * 100
+
+    fig = plt.figure()
+    res = stats.probplot(returns, dist="norm", plot=plt)
+    plt.title('Normal Q-Q Plot')
+    plt.xlabel('Theoretical Quantiles')
+    plt.ylabel('Sample Quantiles')
+
+    plt.savefig(os.path.join(enums.STAT_FIGURES_DIR, "QQPlotOfDailyReturns.png"))

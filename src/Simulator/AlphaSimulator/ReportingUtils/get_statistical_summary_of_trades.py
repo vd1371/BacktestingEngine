@@ -113,6 +113,24 @@ def add_statistical_reports(df, summary, df_g = None, is_chunk = False, **params
         else:
             summary['annual(%)'] = \
                 ((1+summary['return(%)']/100)**(1/years)-1) * 100
+            
+        returns = df_g['PortfolioValue'].pct_change() * 100
+        returns.dropna(inplace = True)
+
+        average_daily_return = returns.mean()
+        std_daily_return = returns.std()
+
+        volatility = std_daily_return * np.sqrt(252)
+        summary['volatility(%)'] = volatility
+
+        confidence_level = 0.95
+        z_score = norm.ppf(confidence_level)
+        VaR_percentage = - z_score * std_daily_return
+
+        summary['VaR(%)'] = VaR_percentage
+
+        summary['sharpe'] = average_daily_return / std_daily_return * np.sqrt(252)
+        
 
 
     ## TODO: ASSIGNMENT #1

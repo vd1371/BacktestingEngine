@@ -65,8 +65,10 @@ def conduct_univariate_multivariate_hyp_testing(df, **params):
         p_value = model.pvalues[col]
         holder[col] = p_value
 
-    print ("Long Trades")
-    pprint.pprint (holder)
+    print ("\n\np-values of stats for Long Trades")
+    print ("---------------------------------")
+    df = pd.DataFrame.from_dict(holder, orient='index', columns=['p_value'])
+    print (df)
 
     # Univariate Hypothesis Testing on the short ones
     holder = {}
@@ -86,8 +88,10 @@ def conduct_univariate_multivariate_hyp_testing(df, **params):
         p_value = model.pvalues[col]
         holder[col] = p_value
 
-    print ("Short Trades")
-    pprint.pprint (holder)
+    print ("\n\np-values of stats for Short Trades")
+    print ("---------------------------------")
+    df = pd.DataFrame.from_dict(holder, orient='index', columns=['p_value'])
+    print (df)
 
     # Regress PnL vs stat_Vola(22)_1d
     df_tmp = short_trades[['stat_Vola(22)_1d', 'PnL_ratio']].copy()
