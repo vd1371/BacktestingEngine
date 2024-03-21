@@ -2,11 +2,15 @@ import numpy as np
 import itertools
 import time
 from copy import deepcopy
+import pandas as pd
+import os
 
 from .simulate import simulate
 
 
 def optimize(**params):
+
+    enums = params['enums']
 
     trading_params_ranges = {
         "stop_loss_percentage": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
@@ -38,7 +42,18 @@ def optimize(**params):
     else:
         raise ValueError(f"Unknown optimization method: {opt_method}")
 
-    print (results)
+    # Convert the results into dataframe
+    holder = []
+    for combination, summary in results:
+        holder.append({**combination, **summary})
+    
+    results_df = pd.DataFrame(holder)
+
+    col = "sharpe" if "sharpe" in results_df.columns else "annual(%)"
+    results_df = results_df.sort_values(by=col, ascending=False)
+
+    direc = os.path.join(enums.OPTIMIZATION_DIR, f"{opt_method}.csv")
+    results_df.to_csv(direc)
 
     return
 
@@ -128,7 +143,7 @@ def _optimize_using_genetic_algorithm(trading_params_ranges, params):
     
     # Genetic Algorithm Parameters
     population_size = 5
-    num_generations = 5
+    num_generations = 2
     crossover_rate = 0.8
     mutation_rate = 0.1
     n_elites = 2
