@@ -52,7 +52,7 @@ def optimize(**params):
     col = "sharpe" if "sharpe" in results_df.columns else "annual(%)"
     results_df = results_df.sort_values(by=col, ascending=False)
 
-    direc = os.path.join(enums.OPTIMIZATION_DIR, f"{opt_method}.csv")
+    direc = os.path.join(enums.OPTIMIZATION_RESULTS_DIR, f"{opt_method}.csv")
     results_df.to_csv(direc)
 
     return
