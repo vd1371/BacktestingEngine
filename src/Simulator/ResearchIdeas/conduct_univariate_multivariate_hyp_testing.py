@@ -96,7 +96,7 @@ def conduct_univariate_multivariate_hyp_testing(df, **params):
     # Regress PnL vs stat_Vola(22)_1d
     df_tmp = short_trades[['stat_Vola(22)_1d', 'PnL_ratio']].copy()
     df_tmp.dropna(inplace=True, axis=0)
-    X = df_tmp['stat_Vola(22)_1d']
+    X = df_tmp[col]
     Y = df_tmp['PnL_ratio']
     X = sm.add_constant(X)
 
